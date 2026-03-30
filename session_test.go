@@ -107,7 +107,7 @@ func TestExecuteKW(t *testing.T) {
 		"res.partner", "search_read",
 		godoorpc.Args{
 			godoorpc.Domain{
-				godoorpc.Condition{Field: "is_company", Operator: "=", Value: true},
+				godoorpc.Condition{Field: "is_company", Op: "=", Value: true},
 			},
 		},
 		godoorpc.KWArgs{"fields": []string{"name"}, "limit": 1},

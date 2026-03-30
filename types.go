@@ -7,18 +7,20 @@ type DomainNode interface {
 	isDomainNode()
 }
 
-// Condition represents a single filter triple: (field, operator, value).
+// Condition represents a single filter triple: (field, op, value).
+// Op is a comparison operator such as "=", "!=", ">", "<", "ilike".
+// This is distinct from Operator, which is a logical prefix operator.
 type Condition struct {
-	Field    string
-	Operator string
-	Value    any
+	Field string
+	Op    string
+	Value any
 }
 
 func (c Condition) isDomainNode() {}
 
-// MarshalJSON serializes Condition as a JSON array [field, operator, value].
+// MarshalJSON serializes Condition as a JSON array [field, op, value].
 func (c Condition) MarshalJSON() ([]byte, error) {
-	return json.Marshal([]any{c.Field, c.Operator, c.Value})
+	return json.Marshal([]any{c.Field, c.Op, c.Value})
 }
 
 // Operator is a prefix domain operator.

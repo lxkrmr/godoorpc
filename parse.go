@@ -104,5 +104,5 @@ func parseDomainNode(raw json.RawMessage) (DomainNode, error) {
 		return nil, fmt.Errorf("condition value: %w", err)
 	}
 
-	return Condition{Field: field, Operator: operator, Value: value}, nil
+	return Condition{Field: field, Op: operator, Value: value}, nil
 }

@@ -21,49 +21,49 @@ func TestParseDomain(t *testing.T) {
 			name:  "single condition with string value",
 			input: "[('name', '=', 'Acme')]",
 			expected: godoorpc.Domain{
-				godoorpc.Condition{Field: "name", Operator: "=", Value: "Acme"},
+				godoorpc.Condition{Field: "name", Op: "=", Value: "Acme"},
 			},
 		},
 		{
 			name:  "single condition with bool true",
 			input: "[('is_company', '=', True)]",
 			expected: godoorpc.Domain{
-				godoorpc.Condition{Field: "is_company", Operator: "=", Value: true},
+				godoorpc.Condition{Field: "is_company", Op: "=", Value: true},
 			},
 		},
 		{
 			name:  "single condition with bool false",
 			input: "[('active', '=', False)]",
 			expected: godoorpc.Domain{
-				godoorpc.Condition{Field: "active", Operator: "=", Value: false},
+				godoorpc.Condition{Field: "active", Op: "=", Value: false},
 			},
 		},
 		{
 			name:  "single condition with None",
 			input: "[('parent_id', '=', None)]",
 			expected: godoorpc.Domain{
-				godoorpc.Condition{Field: "parent_id", Operator: "=", Value: nil},
+				godoorpc.Condition{Field: "parent_id", Op: "=", Value: nil},
 			},
 		},
 		{
 			name:  "single condition with integer value",
 			input: "[('bid_price', '>', 0)]",
 			expected: godoorpc.Domain{
-				godoorpc.Condition{Field: "bid_price", Operator: ">", Value: float64(0)},
+				godoorpc.Condition{Field: "bid_price", Op: ">", Value: float64(0)},
 			},
 		},
 		{
 			name:  "string value containing True is preserved as string",
 			input: "[('state', '=', 'True')]",
 			expected: godoorpc.Domain{
-				godoorpc.Condition{Field: "state", Operator: "=", Value: "True"},
+				godoorpc.Condition{Field: "state", Op: "=", Value: "True"},
 			},
 		},
 		{
 			name:  "string value containing False is preserved as string",
 			input: "[('state', '=', 'False')]",
 			expected: godoorpc.Domain{
-				godoorpc.Condition{Field: "state", Operator: "=", Value: "False"},
+				godoorpc.Condition{Field: "state", Op: "=", Value: "False"},
 			},
 		},
 		{
@@ -71,8 +71,8 @@ func TestParseDomain(t *testing.T) {
 			input: "['|', ('name', 'ilike', 'foo'), ('name', 'ilike', 'bar')]",
 			expected: godoorpc.Domain{
 				godoorpc.Or,
-				godoorpc.Condition{Field: "name", Operator: "ilike", Value: "foo"},
-				godoorpc.Condition{Field: "name", Operator: "ilike", Value: "bar"},
+				godoorpc.Condition{Field: "name", Op: "ilike", Value: "foo"},
+				godoorpc.Condition{Field: "name", Op: "ilike", Value: "bar"},
 			},
 		},
 		{
@@ -80,8 +80,8 @@ func TestParseDomain(t *testing.T) {
 			input: "['&', ('is_company', '=', True), ('active', '=', True)]",
 			expected: godoorpc.Domain{
 				godoorpc.And,
-				godoorpc.Condition{Field: "is_company", Operator: "=", Value: true},
-				godoorpc.Condition{Field: "active", Operator: "=", Value: true},
+				godoorpc.Condition{Field: "is_company", Op: "=", Value: true},
+				godoorpc.Condition{Field: "active", Op: "=", Value: true},
 			},
 		},
 	}
