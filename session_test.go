@@ -70,6 +70,21 @@ func TestNewSession_RPCError(t *testing.T) {
 	}
 }
 
+func TestNewSession_ServerError(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}))
+	defer srv.Close()
+
+	_, err := godoorpc.NewSession(srv.URL, "testdb", "admin", "admin")
+	if err == nil {
+		t.Fatal("expected an error, got nil")
+	}
+	if err.Error() != "unexpected http status: 503 Service Unavailable" {
+		t.Fatalf("unexpected error message: %v", err)
+	}
+}
+
 func TestExecuteKW(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {

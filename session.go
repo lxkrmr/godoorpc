@@ -108,6 +108,10 @@ func (c *Client) call(endpoint string, params any, out any) error {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected http status: %s", resp.Status)
+	}
+
 	var rpcResp rpcResponse
 	if err := json.NewDecoder(resp.Body).Decode(&rpcResp); err != nil {
 		return fmt.Errorf("decode rpc response: %w", err)
