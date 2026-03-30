@@ -37,6 +37,20 @@ const (
 // Domain is a list of DomainNodes used as a filter in Odoo RPC calls.
 type Domain []DomainNode
 
+// MarshalJSON serializes Domain as a JSON array.
+// A nil or empty Domain marshals to [] — never null.
+// Odoo expects an empty array for an unrestricted domain, not null.
+func (d Domain) MarshalJSON() ([]byte, error) {
+	if len(d) == 0 {
+		return []byte("[]"), nil
+	}
+	nodes := make([]any, len(d))
+	for i, node := range d {
+		nodes[i] = node
+	}
+	return json.Marshal(nodes)
+}
+
 // Args is a positional argument list for an RPC call.
 type Args []any
 
