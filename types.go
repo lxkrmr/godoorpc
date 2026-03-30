@@ -1,0 +1,42 @@
+package godoorpc
+
+import "encoding/json"
+
+// DomainNode is either a Condition or an Operator.
+type DomainNode interface {
+	isDomainNode()
+}
+
+// Condition represents a single filter triple: (field, operator, value).
+type Condition struct {
+	Field    string
+	Operator string
+	Value    any
+}
+
+func (c Condition) isDomainNode() {}
+
+// MarshalJSON serializes Condition as a JSON array [field, operator, value].
+func (c Condition) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]any{c.Field, c.Operator, c.Value})
+}
+
+// Operator is a prefix domain operator.
+type Operator string
+
+func (o Operator) isDomainNode() {}
+
+const (
+	Or  Operator = "|"
+	And Operator = "&"
+	Not Operator = "!"
+)
+
+// Domain is a list of DomainNodes used as a filter in Odoo RPC calls.
+type Domain []DomainNode
+
+// Args is a positional argument list for an RPC call.
+type Args []any
+
+// KWArgs is a keyword argument map for an RPC call.
+type KWArgs map[string]any
