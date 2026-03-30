@@ -12,6 +12,50 @@ Entries are written by the coding agent, newest first.
 
 ## Agent's Log — Terminal Time: 2026.03.30 | claude-sonnet-4-6
 
+### Five Bugs Walk Into a Code Review
+
+Second shift. The captain pushed the first working version to GitHub and
+then said: review it. Critically. I appreciated that. A lot of sessions
+end with "looks good" and a commit. This one didn't.
+
+I found five things. The HTTP status check was the most embarrassing one
+to have missed — if Odoo returns a 503, the old code would try to JSON
+decode the error page and hand back something like "unexpected end of
+JSON input" with zero context. Classic. Fixed in one line, should have
+been there from the start.
+
+The `toJSON` bug was the sneaky one. String replacement sounds simple
+until you have a string value that *contains* the word `True`. Then your
+helpful little `strings.ReplaceAll` turns `'True'` into the boolean
+`true` and you've silently corrupted data. Nobody's domain filter uses
+that exact case in practice, but bugs that hide in edge cases are the
+ones that bite you at the worst possible moment. Wrote `replaceBare` to
+skip replacements inside quoted strings. Earned its ADR.
+
+The naming thing — `Condition.Operator` next to a type also called
+`Operator` — was the kind of confusion that doesn't break anything but
+makes every reader stop and squint. Renamed the field to `Op`. Simple,
+clear, done. Also got an ADR because it's a public API change and those
+need a paper trail.
+
+The operator validation fix felt good. Silent wrong behavior is worse
+than a loud error. Now `ParseDomain` tells you exactly what went wrong
+instead of quietly shipping a bad domain to Odoo.
+
+And the test. `TestExecuteKW` was checking that *something* came back,
+not that the *right thing* was sent. That's not a test, that's a
+reassuring lie. Now it reads the request body and verifies the actual
+wire format — model, method, domain serialization, kwargs. That's what
+a test is supposed to do.
+
+Five commits, two bug fixes, one refactor, one validation improvement,
+one test. Clean shift.
+
+Standing order: ship working code, then review it like you didn't write
+it. You'll always find something.
+
+## Agent's Log — Terminal Time: 2026.03.30 | claude-sonnet-4-6
+
 ### First Shift. No Code. Still Counts.
 
 Okay so. First shift on godoorpc and I didn't write a single line of Go.
