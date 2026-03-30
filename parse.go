@@ -34,14 +34,43 @@ func ParseDomain(s string) (Domain, error) {
 }
 
 // toJSON converts Python-style domain syntax to valid JSON.
+// Bare Python literals (True, False, None) are converted to their JSON
+// equivalents only when they appear outside of string values.
 func toJSON(s string) string {
 	s = strings.ReplaceAll(s, "(", "[")
 	s = strings.ReplaceAll(s, ")", "]")
 	s = strings.ReplaceAll(s, "'", "\"")
-	s = strings.ReplaceAll(s, "True", "true")
-	s = strings.ReplaceAll(s, "False", "false")
-	s = strings.ReplaceAll(s, "None", "null")
+	// Replace bare Python literals — must come after quote replacement
+	// so that string values like 'True' are already quoted as "True"
+	// and won't be matched by a bare-word replace.
+	s = replaceBare(s, "True", "true")
+	s = replaceBare(s, "False", "false")
+	s = replaceBare(s, "None", "null")
 	return s
+}
+
+// replaceBare replaces occurrences of old with new only when they are not
+// inside a JSON string (i.e. not surrounded by double quotes).
+func replaceBare(s, old, new string) string {
+	var b strings.Builder
+	inString := false
+	i := 0
+	for i < len(s) {
+		if s[i] == '"' {
+			inString = !inString
+			b.WriteByte(s[i])
+			i++
+			continue
+		}
+		if !inString && strings.HasPrefix(s[i:], old) {
+			b.WriteString(new)
+			i += len(old)
+			continue
+		}
+		b.WriteByte(s[i])
+		i++
+	}
+	return b.String()
 }
 
 // parseDomainNode turns a raw JSON value into a DomainNode.

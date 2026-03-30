@@ -53,6 +53,20 @@ func TestParseDomain(t *testing.T) {
 			},
 		},
 		{
+			name:  "string value containing True is preserved as string",
+			input: "[('state', '=', 'True')]",
+			expected: godoorpc.Domain{
+				godoorpc.Condition{Field: "state", Operator: "=", Value: "True"},
+			},
+		},
+		{
+			name:  "string value containing False is preserved as string",
+			input: "[('state', '=', 'False')]",
+			expected: godoorpc.Domain{
+				godoorpc.Condition{Field: "state", Operator: "=", Value: "False"},
+			},
+		},
+		{
 			name:  "OR with two conditions",
 			input: "['|', ('name', 'ilike', 'foo'), ('name', 'ilike', 'bar')]",
 			expected: godoorpc.Domain{
