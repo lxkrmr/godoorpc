@@ -73,13 +73,25 @@ func replaceBare(s, old, new string) string {
 	return b.String()
 }
 
+// knownOperators holds the set of valid Odoo prefix domain operators.
+var knownOperators = map[string]Operator{
+	string(Or):  Or,
+	string(And): And,
+	string(Not): Not,
+}
+
 // parseDomainNode turns a raw JSON value into a DomainNode.
-// A JSON string becomes an Operator, a JSON array becomes a Condition.
+// A JSON string becomes an Operator if it is one of |, &, or !.
+// A JSON array becomes a Condition.
 func parseDomainNode(raw json.RawMessage) (DomainNode, error) {
-	// Try string first — could be an operator like "|", "&", "!"
+	// Try string first — must be a known prefix operator
 	var s string
 	if err := json.Unmarshal(raw, &s); err == nil {
-		return Operator(s), nil
+		op, ok := knownOperators[s]
+		if !ok {
+			return nil, fmt.Errorf("unknown domain operator %q: expected one of %q, %q, %q", s, Or, And, Not)
+		}
+		return op, nil
 	}
 
 	// Otherwise expect a three-element array: [field, operator, value]

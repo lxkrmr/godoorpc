@@ -112,6 +112,7 @@ func TestParseDomain_InvalidInput(t *testing.T) {
 		{name: "condition with wrong length", input: "[('name', '=')]"},
 		{name: "condition field not a string", input: "[[1, '=', 'foo']]"},
 		{name: "malformed json after conversion", input: "[unclosed"},
+		{name: "unknown operator string", input: "['||', ('name', '=', 'foo')]"},
 	}
 
 	for _, tt := range tests {
